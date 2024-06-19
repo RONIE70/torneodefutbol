@@ -1,9 +1,15 @@
+<?php
+
+include_once("../inc/conn.php");
+include_once("./arbitros.php")
+?>
+
 <html>
 	<head><link href="css/estilo.css" rel="stylesheet" type="text/css"/></head>
 	<body>
 		<div id="formulario">                           
 			<form name="abm" method="POST" action="index.php?1&2">
-				<h1>Torneo de F&uacute;tbol</h1>
+				<h1>Torneo de Futbol</h1>
 				<h2>Carga de Arbitros</h2>	
 				<BR>
 				<input type="hidden" id="idarbitro" name="idarbitro" value="<?php print $idarbitro;?>">

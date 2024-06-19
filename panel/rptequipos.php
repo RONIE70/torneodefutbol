@@ -1,6 +1,6 @@
 <?php
 
-include("conn.php");
+include_once("conn.php");
 
 for($i=1;$i<=4;$i++)
 {
@@ -10,33 +10,33 @@ for($i=1;$i<=4;$i++)
 	elseif($i==4)$zona="ZONA D";
 	else $zona = "";
 
-	$sql = "SELECT e.idequipo,e.idzona,z.idzona,z.zona,e.equipo FROM equipos e, zonas z WHERE e.idzona = z.idzona and e.idzona = '".$i."' ORDER BY e.idequipo";
-	$resultado = mysql_query($sql, $enlace);
-	$count = mysql_num_rows($resultado);
+	$sql = new mysqli ("SELECT e.idequipo,e.idzona,z.idzona,z.zona,e.equipo FROM equipos e, zonas z WHERE e.idzona = z.idzona and e.idzona = '".$i."' ORDER BY e.idequipo");
+	$resultado = mysqli_query($sql, $enlace);
+	$count = mysqli_num_rows($resultado);
 
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{										
 	    $registros.= "<tr><td>".$fila->zona."</td><td>".$fila->equipo."</td>
 	    <td><a href='equipos.php?modificar&id=".$fila->idequipo."'>Modificar</a></td>
 	    <td><a href='equipos.php?eliminar&id=".$fila->idequipo."'>Eliminar</a></td>
 	    </tr>";					  
 	}
-
+}
 // Combo Zona
-$sql = "SELECT idzona,zona FROM zonas ORDER BY idzona";
-$resultado = mysql_query($sql, $enlace);
+$sql = new mysqli ("SELECT idzona,zona FROM zonas ORDER BY idzona");
+$resultado = mysqli_query($sql, $enlace);
 $combozona = "<select id='zona' name='idzona'>";
 $combozona.="<option value =''></option>";
 if(!isset($_GET['modificar']))
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{										
     	$combozona.="<option value ='".$fila->idzona."'>".$fila->zona."</option>";				  
 	}
 }
 else 
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{
 		if($fila->idzona == $idzona)$selected = " selected";
 		else $selected = "";
@@ -45,7 +45,7 @@ else
 }
 $combozona.= "</select>";
 
-mysql_free_result($resultado);
+mysqli_free_result($resultado);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -87,6 +87,7 @@ mysql_free_result($resultado);
 			</table>
 		</div>
 	</div>
+	</body>
+
 <?php footer();?>
-</body>
 </html>

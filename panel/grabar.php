@@ -6,9 +6,9 @@ verificar();
 
 $GF = $GC = "";
 
-$sql = "UPDATE partidos SET glocal = '".$_GET['glocal']."',gvisitante = '".$_GET['gvisitante']."' WHERE idpartido = ".$_GET['idpartido']." and idzona=".$_GET['idzona']." and nrofecha=".$_GET['nrofecha'];
+$sql = new mysqli ("UPDATE partidos SET glocal = '".$_GET['glocal']."',gvisitante = '".$_GET['gvisitante']."'WHERE idpartido = ".$_GET['idpartido']." and idzona=".$_GET['idzona']." and nrofecha=".$_GET['nrofecha']);
 
-$resultado = mysql_query($sql);
+$resultado = mysqli_query($sql,$enlace);
 if (!$resultado)$msg = "<font color='red'><br>error al grabar</font>";
 else
 {
@@ -68,12 +68,12 @@ else
 		
 	$DF = $GF - $GC;
 		
-	$sql = "insert into puntajes(idzona,idequipo,nrofecha,PG,PE,PP,NP,GF,GC,DF,PTS) values('".$_GET['idzona']."','".$idequipo."','".$_GET['nrofecha']."','".$PG."','".$PE."','".$PP."','".$NP."','".$GF."','".$GC."','".$DF."','".$PTS."')";
-	$resultado = mysql_query($sql);
-	if(mysql_errno() == 1062)
+	$sql = new mysqli ("INSERT into puntajes(idzona,idequipo,nrofecha,PG,PE,PP,NP,GF,GC,DF,PTS) values('".$_GET['idzona']."','".$idequipo."','".$_GET['nrofecha']."','".$PG."','".$PE."','".$PP."','".$NP."','".$GF."','".$GC."','".$DF."','".$PTS."')");
+	$resultado = mysqli_query($sql,$enlace);
+	if(mysqli_errno($sql) == 1062)
 	{
-		$sql = "UPDATE puntajes SET PG = '".$PG."',PE = '".$PE."',PP = '".$PP."',NP = '".$NP."',GF = '".$GF."',GC = '".$GC."',DF = '".$DF."',PTS = '".$PTS."' WHERE idzona = ".$_GET['idzona']." and idequipo=".$idequipo." and nrofecha=".$_GET['nrofecha'];
-		$resultado = mysql_query($sql);
+		$sql = new mysqli ("UPDATE puntajes SET PG = '".$PG."',PE = '".$PE."',PP = '".$PP."',NP = '".$NP."',GF = '".$GF."',GC = '".$GC."',DF = '".$DF."',PTS = '".$PTS."' WHERE idzona = ".$_GET['idzona']." and idequipo=".$idequipo." and nrofecha=".$_GET['nrofecha']);
+		$resultado = mysqli_query($sql,$enlace);
 		if (!$resultado)$msg.= "&nbsp;&nbsp;&nbsp;<font color='red'><br><br>error al grabar el puntaje local</font>";		
 	}
 	
@@ -131,18 +131,18 @@ else
 	
 	$DF = $GF - $GC;	
 	
-	$sql = "insert into puntajes(idzona,idequipo,nrofecha,PG,PE,PP,NP,GF,GC,DF,PTS) values('".$_GET['idzona']."','".$idequipo."','".$_GET['nrofecha']."','".$PG."','".$PE."','".$PP."','".$NP."','".$GF."','".$GC."','".$DF."','".$PTS."')";
-	$resultado = mysql_query($sql);
-	if(mysql_errno() == 1062)
+	$sql = new mysqli ("INSERT into puntajes(idzona,idequipo,nrofecha,PG,PE,PP,NP,GF,GC,DF,PTS) values('".$_GET['idzona']."','".$idequipo."','".$_GET['nrofecha']."','".$PG."','".$PE."','".$PP."','".$NP."','".$GF."','".$GC."','".$DF."','".$PTS."')");
+	$resultado = mysqli_query($sql,$enlace);
+	if(mysqli_errno($sql) == 1062)
 	{
-		$sql = "UPDATE puntajes SET PG = '".$PG."',PE = '".$PE."',PP = '".$PP."',NP = '".$NP."',GF = '".$GF."',GC = '".$GC."',DF = '".$DF."',PTS = '".$PTS."' WHERE idzona = ".$_GET['idzona']." and idequipo=".$idequipo." and nrofecha=".$_GET['nrofecha'];
-		$resultado = mysql_query($sql);
+		$sql = new mysqli ("UPDATE puntajes SET PG = '".$PG."',PE = '".$PE."',PP = '".$PP."',NP = '".$NP."',GF = '".$GF."',GC = '".$GC."',DF = '".$DF."',PTS = '".$PTS."' WHERE idzona = ".$_GET['idzona']." and idequipo=".$idequipo." and nrofecha=".$_GET['nrofecha']);
+		$resultado = mysqli_query($sql,$enlace);
 		if (!$resultado)$msg.= "&nbsp;&nbsp;&nbsp;<font color='red'><br>error al grabar el puntaje visitante</font>";		
 	}
 }
 
 print $msg;
 
-mysql_close($enlace);
+mysqli_close($enlace);
 
 ?>

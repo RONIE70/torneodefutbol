@@ -1,6 +1,8 @@
 <?php
 
-include("../inc/conn.php");
+include_once("../inc/conn.php");
+require_once("../inc/config.php");
+require_once("../inc/fnc.php");
 
 verificar();
 
@@ -27,11 +29,11 @@ if(isset($_POST['grabar']))
 		elseif($_POST['accion'] == "modificar")$sql = "UPDATE equipos SET idzona = '".$_POST['idzona']."', equipo = '".$_POST['equipo']."' WHERE idequipo = ".$_POST['idequipo'];		
 	}
 }
-elseif(isset($_GET['eliminar']))$sql = "delete from equipos where idequipo = ".$_GET['id'];
+elseif(isset($_GET['eliminar']))$sql = new mysqli ("delete from equipos where idequipo = ".$_GET['id']);
 
 if($sql!="")
 {
-	$resultado = mysql_query($sql);
+	$resultado = mysqli_query($sql,$enlace);
 	if (!$resultado)$msg = "Error al intentar realizar la operacion";
 	else $msg = "Operacion realizada con exito";
 }
@@ -40,22 +42,22 @@ $accion = "insertar";
 
 if(isset($_GET['modificar']))
 {
-	$sql = "SELECT idequipo,idzona,equipo FROM equipos WHERE idequipo = ".$_GET['id'];
-	$resultado = mysql_query($sql, $enlace);	
-	$fila = mysql_fetch_object($resultado);
+	$sql = new mysqli ("SELECT idequipo,idzona,equipo FROM equipos WHERE idequipo = ".$_GET['id']);
+	$resultado = mysqli_query($sql, $enlace);	
+	$fila = mysqli_fetch_object($resultado);
 	$idequipo = $fila->idequipo;
 	$idzona = 	$fila->idzona;
 	$equipo = $fila->equipo;
 	$accion = "modificar";			
 }
 
-$sql = "SELECT e.idequipo,e.idzona,z.idzona,z.zona,e.equipo FROM equipos e, zonas z WHERE e.idzona = z.idzona ORDER BY e.idequipo";
-$resultado = mysql_query($sql, $enlace);
-$count = mysql_num_rows($resultado);
+$sql = new mysqli ("SELECT e.idequipo,e.idzona,z.idzona,z.zona,e.equipo FROM equipos e, zonas z WHERE e.idzona = z.idzona ORDER BY e.idequipo");
+$resultado = mysqli_query($sql, $enlace);
+$count = mysqli_num_rows($resultado);
 
 if($count > 0)
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{										
 	    $registros.= "<tr><td>".$fila->zona."</td><td>".$fila->equipo."</td>
 	    <td><a href='equipos.php?modificar&id=".$fila->idequipo."'>Modificar</a></td>
@@ -65,20 +67,20 @@ if($count > 0)
 }else $registros = "";
 
 // Combo Zona
-$sql = "SELECT idzona,zona FROM zonas ORDER BY idzona";
-$resultado = mysql_query($sql, $enlace);
+$sql = new mysqli ("SELECT idzona,zona FROM zonas ORDER BY idzona");
+$resultado = mysqli_query($sql, $enlace);
 $combozona = "<select id='zona' name='idzona'>";
 $combozona.="<option value =''></option>";
 if(!isset($_GET['modificar']))
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{										
     	$combozona.="<option value ='".$fila->idzona."'>".$fila->zona."</option>";				  
 	}
 }
 else 
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{
 		if($fila->idzona == $idzona)$selected = " selected";
 		else $selected = "";
@@ -91,14 +93,14 @@ if(isset($_POST['publicar']))
 {
 	for($i=1;$i<=4;$i++)
 	{
-		$sql = "SELECT e.idequipo,e.idzona,z.idzona,z.zona,e.equipo FROM equipos e, zonas z WHERE e.idzona = z.idzona and e.idzona = ".$i." ORDER BY e.idzona, e.idequipo";
-		$resultado = mysql_query($sql, $enlace);
-		$count = mysql_num_rows($resultado);
+		$sql = new mysqli("SELECT e.idequipo,e.idzona,z.idzona,z.zona,e.equipo FROM equipos e, zonas z WHERE e.idzona = z.idzona and e.idzona = ".$i." ORDER BY e.idzona, e.idequipo");
+		$resultado = mysqli_query($sql, $enlace);
+		$count = mysqli_num_rows($resultado);
 
 		if($count > 0)
 		{	
 			$c = 0;
-			while ($fila = mysql_fetch_object($resultado)) 
+			while ($fila = mysqli_fetch_object($resultado)) 
 			{
 				if($fila->idzona == 1)$zona1[$c] = $fila->equipo;
 				elseif($fila->idzona == 2)$zona2[$c] = $fila->equipo;
@@ -139,7 +141,7 @@ if(isset($_POST['publicar']))
 }
 
 
-mysql_free_result($resultado);
+mysqli_free_result($resultado);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">

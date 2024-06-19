@@ -1,8 +1,11 @@
 <?php
 
-include("../inc/config.php");
+include_once("config.php");
+include_once("../panel/index.php");
+
 
 function validar($usuario,$clave)
+
 {
 	$a = false;
 	if ($usuario==USUARIO && $clave==CLAVE) 
@@ -11,7 +14,8 @@ function validar($usuario,$clave)
 		{
 			session_start();
 			// session_register("usuario");
-			$_SESSION["usuario"] = $usuario;				
+			$_SESSION["usuario"] = $usuario;	
+					
 		}
 		$a = true;
 	}

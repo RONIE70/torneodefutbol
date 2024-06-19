@@ -1,6 +1,6 @@
 <?php
 
-include("../inc/conn.php");
+include_once("../inc/conn.php");
 
 verificar();
 
@@ -14,15 +14,15 @@ if(isset($_POST['grabar']))
 {
 	if(isset($_POST['accion']))
 	{
-		if($_POST['accion'] == "insertar")$sql = "insert into arbitros(arbitro) values ('".$_POST['arbitro']."')";
-		elseif($_POST['accion'] == "modificar")$sql = "UPDATE arbitros SET arbitro = '".$_POST['arbitro']."' WHERE idarbitro = ".$_POST['idarbitro'];		
+		if($_POST['accion'] == "insertar")$sql = new mysqli ("INSERT into arbitros(arbitro) values ('".$_POST['arbitro']."')");
+		elseif($_POST['accion'] == "modificar")$sql = new mysqli("UPDATE arbitros SET arbitro = '".$_POST['arbitro']."' WHERE idarbitro = ".$_POST['idarbitro']);		
 	}
 }
-elseif(isset($_GET['eliminar']))$sql = "delete from arbitros where idarbitro = ".$_GET['id'];
+elseif(isset($_GET['eliminar']))$sql = "DELETE from arbitros where idarbitro = ".$_GET['id'];
 
 if($sql!="")
 {
-	$resultado = mysql_query($sql);
+	$resultado = mysqli_query($sql,$enlace);
 	if (!$resultado)$msg = "Error al intentar realizar la operacion";
 	else $msg = "Operacion realizada con exito";
 }
@@ -31,28 +31,28 @@ $accion = "insertar";
 
 if(isset($_GET['modificar']))
 {
-	$sql = "SELECT idarbitro,arbitro FROM arbitros WHERE idarbitro = ".$_GET['id'];
-	$resultado = mysql_query($sql, $enlace);	
-	$fila = mysql_fetch_object($resultado);
+	$sql = new mysqli ("SELECT idarbitro,arbitro FROM arbitros WHERE idarbitro = ".$_GET['id']);
+	$resultado = mysqli_query($sql, $enlace);	
+	$fila = mysqli_fetch_object($resultado);
 	$idarbitro = $fila->idarbitro;
 	$arbitro = 	$fila->arbitro;
 	$accion = "modificar";			
 }
 
-$sql = "SELECT idarbitro,arbitro FROM arbitros ORDER BY idarbitro";
-$resultado = mysql_query($sql, $enlace);
-$count = mysql_num_rows($resultado);
+$sql = new mysqli("SELECT idarbitro,arbitro FROM arbitros ORDER BY idarbitro");
+$resultado = mysqli_query($sql, $enlace);
+$count = mysqli_num_rows($resultado);
 
 if($count > 0)
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{										
 	    $registros.= "<tr><td>".$fila->idarbitro."</td><td>".$fila->arbitro."</td>
 	    <td><a href='arbitros.php?modificar&id=".$fila->idarbitro."'>Modificar</a></td>
 	    <td><a href='arbitros.php?eliminar&id=".$fila->idarbitro."'>Eliminar</a></td>
 	    </tr>";					  
 	}
-	mysql_free_result($resultado);
+	mysqli_free_result($resultado);
 }else $registros = "";
 		
 

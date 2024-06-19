@@ -3,15 +3,18 @@
 require_once("fnc.php");
 require_once("config.php");
 
-$enlace =  mysql_connect(HOST, USERDB, PASSDB);
+$enlace = mysqli_connect("localhost", "root", "", "futboldb");
+
 if (!$enlace) {
-    die('No pudo conectarse: ' . mysql_error());
-}
-
-
-if (!mysql_select_db(DB, $enlace)) {
-    echo 'No pudo seleccionar la base de datos';
+    echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+    echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+    echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
     exit;
 }
 
+echo "Éxito: Se realizó una conexión apropiada a MySQL! La base de datos futboldb es genial." . PHP_EOL;
+echo "Información del host: " . mysqli_get_host_info($enlace) . PHP_EOL;
+
+mysqli_close($enlace);
+//var_dump($enlace);
 ?>

@@ -1,6 +1,9 @@
 <?php
 
 include("../inc/conn.php");
+require_once("../inc/config.php");
+require_once("../inc/fnc.php");
+
 
 verificar();
 
@@ -27,16 +30,16 @@ if(isset($_POST['grabar']))
 {
 	if(isset($_POST['accion']))
 	{
-		if($_POST['accion'] == "insertar")$sql = "insert into partidos(idzona,nrofecha,idpartido,idarbitro,local,visitante,fecha,hora) values ('".$_POST['idzona']."','".$_POST['nrofecha']."','".$_POST['idpartido']."','','".$_POST['local']."','".$_POST['visitante']."','".$_POST['fecha']."','".$_POST['hora']."')";
-		elseif($_POST['accion'] == "modificar")$sql = "UPDATE partidos SET idpartido = '".$_POST['idpartido']."',local = '".$_POST['local']."',visitante = '".$_POST['visitante']."',fecha = '".$_POST['fecha']."',hora = '".$_POST['hora']."' WHERE idpartido = ".$_POST['idpartido']." and idzona=".$_POST['idzona']." and nrofecha=".$_POST['nrofecha'];
+		if($_POST['accion'] == "insertar")$sql = new mysqli ("INSERT into partidos(idzona,nrofecha,idpartido,idarbitro,local,visitante,fecha,hora) values ('".$_POST['idzona']."','".$_POST['nrofecha']."','".$_POST['idpartido']."','','".$_POST['local']."','".$_POST['visitante']."','".$_POST['fecha']."','".$_POST['hora']."')");
+		elseif($_POST['accion'] == "modificar")$sql = new mysqli ("UPDATE partidos SET idpartido = '".$_POST['idpartido']."',local = '".$_POST['local']."',visitante = '".$_POST['visitante']."',fecha = '".$_POST['fecha']."',hora = '".$_POST['hora']."' WHERE idpartido = ".$_POST['idpartido']." and idzona=".$_POST['idzona']." and nrofecha=".$_POST['nrofecha']);
 		// idarbitro = '".$_POST['idarbitro']."',
 	}
 }
-elseif(isset($_GET['eliminar']))$sql = "delete from partidos where idpartido = ".$_GET['idpartido']." and idzona=".$_GET['idzona']." and nrofecha=".$_GET['nrofecha'];
+elseif(isset($_GET['eliminar']))$sql = new mysqli ("DELETE from partidos where idpartido = ".$_GET['idpartido']." and idzona=".$_GET['idzona']." and nrofecha=".$_GET['nrofecha']);
 
 if($sql!="")
 {
-	$resultado = mysql_query($sql);
+	$resultado = mysqli_query($sql,$enlace);
 	if (!$resultado)$msg = "Error al intentar realizar la operacion";
 	else $msg = "Operacion realizada con exito";
 }
@@ -45,9 +48,9 @@ $accion = "insertar";
 
 if(isset($_GET['modificar']))
 {
-	$sql = "SELECT p.idzona, z.zona, p.nrofecha, p.idpartido, p.local, e.equipo elocal, p.visitante, c.equipo evisitante, p.fecha , p.hora FROM arbitros a, zonas z, partidos p LEFT JOIN equipos e ON (e.idequipo = p.local), partidos h LEFT JOIN equipos c ON (c.idequipo = h.visitante) WHERE z.idzona = p.idzona and p.idpartido = ".$_GET['idpartido']." and p.idzona=".$_GET['idzona']." and p.nrofecha=".$_GET['nrofecha'];
-	$resultado = mysql_query($sql, $enlace);	
-	$fila = mysql_fetch_object($resultado);
+	$sql = new mysqli ("SELECT p.idzona, z.zona, p.nrofecha, p.idpartido, p.local, e.equipo elocal, p.visitante, c.equipo evisitante, p.fecha , p.hora FROM arbitros a, zonas z, partidos p LEFT JOIN equipos e ON (e.idequipo = p.local), partidos h LEFT JOIN equipos c ON (c.idequipo = h.visitante) WHERE z.idzona = p.idzona and p.idpartido = ".$_GET['idpartido']." and p.idzona=".$_GET['idzona']." and p.nrofecha=".$_GET['nrofecha']);
+	$resultado = mysqli_query($sql, $enlace);	
+	$fila = mysqli_fetch_object($resultado);
 	$idpartido = $fila->idpartido;
 	$idzona = $fila->idzona;
 	$nrofecha = $fila->nrofecha;
@@ -72,13 +75,13 @@ else
 
 if(isset($_POST['idzona']) && isset($_POST['nrofecha']))
 {
-	$sql = "SELECT p.nrofecha, p.idpartido, z.idzona, z.zona, p.local, p.fecha, p.hora, (SELECT equipo FROM equipos where idequipo = p.local) elocal, (SELECT equipo FROM equipos where idequipo = p.visitante) evisitante FROM partidos p, zonas z WHERE z.idzona = p.idzona and p.idzona=".$_POST['idzona']." and p.nrofecha=".$_POST['nrofecha'];
-	$resultado = mysql_query($sql, $enlace);
-	$count = @mysql_num_rows($resultado);
+	$sql = new mysqli ("SELECT p.nrofecha, p.idpartido, z.idzona, z.zona, p.local, p.fecha, p.hora, (SELECT equipo FROM equipos where idequipo = p.local) elocal, (SELECT equipo FROM equipos where idequipo = p.visitante) evisitante FROM partidos p, zonas z WHERE z.idzona = p.idzona and p.idzona=".$_POST['idzona']." and p.nrofecha=".$_POST['nrofecha']);
+	$resultado = mysqli_query($sql, $enlace);
+	$count = @mysqli_num_rows($resultado);
 	
 	if($count > 0)
 	{
-		while ($fila = mysql_fetch_object($resultado)) 
+		while ($fila = mysqli_fetch_object($resultado)) 
 		{
 			$zona = $fila->zona;
 			$fecha = $fila->fecha;
@@ -94,21 +97,21 @@ if(isset($_POST['idzona']) && isset($_POST['nrofecha']))
 }
 
 // Combo Equipo
-$sql = "SELECT idequipo,idzona,equipo FROM equipos where idzona = '".$idzona."' order by idequipo";
+$sql = new mysqli ("SELECT idequipo,idzona,equipo FROM equipos where idzona = '".$idzona."' order by idequipo");
 // Local
-$resultado = mysql_query($sql, $enlace);
+$resultado = mysqli_query($sql, $enlace);
 $comboequipolocal = "<select id='local' name='local'>";
 $comboequipolocal.="<option value =''></option>";
 if(!isset($_GET['modificar']))
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{										
     	$comboequipolocal.="<option value ='".$fila->idequipo."'>".$fila->equipo."</option>";				  
 	}
 }
 else 
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{
 		if($fila->idequipo == $idequipolocal)$selected = " selected";
 		else $selected = "";
@@ -118,19 +121,19 @@ else
 $comboequipolocal.= "</select>";
 
 // Visitante
-$resultado = mysql_query($sql, $enlace);
+$resultado = mysqli_query($sql, $enlace);
 $comboequipovisitante = "<select id='visitante' name='visitante'>";
 $comboequipovisitante.="<option value =''></option>";
 if(!isset($_GET['modificar']))
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{										
     	$comboequipovisitante.="<option value ='".$fila->idequipo."'>".$fila->equipo."</option>";				  
 	}
 }
 else 
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{
 		if($fila->idequipo == $idequipovisitante)$selected = " selected";
 		else $selected = "";
@@ -140,20 +143,20 @@ else
 $comboequipovisitante.= "</select>";
 
 // Combo Zona
-$sql = "SELECT idzona,zona FROM zonas ORDER BY idzona";
-$resultado = mysql_query($sql, $enlace);
+$sql = new mysqli ("SELECT idzona,zona FROM zonas ORDER BY idzona");
+$resultado = mysqli_query($sql, $enlace);
 $combozona = "<select id='idzona' name='idzona'>";
 $combozona.="<option value =''></option>";
 if(@$_POST['accion'] != "modificar" && !isset($_POST['idzona']) && !isset($_GET['idzona']))
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{										
     	$combozona.="<option value ='".$fila->idzona."'>".$fila->zona."</option>";				  
 	}
 }
 else
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{
 		if($fila->idzona == $idzona)$selected = " selected";
 		else $selected = "";
@@ -195,9 +198,9 @@ if(isset($_POST['publicar']))
 	for($i=1;$i<=4;$i++)
 	{
 		// $sql = "SELECT p.nrofecha, p.idpartido, z.idzona, z.zona, p.local, p.fecha, p.hora, (SELECT equipo FROM equipos where idequipo = p.local) elocal, (SELECT equipo FROM equipos where idequipo = p.visitante) evisitante FROM partidos p, zonas z WHERE z.idzona = p.idzona and p.idzona=".$i." order by p.idzona, p.nrofecha";
-		$sql = "SELECT p.nrofecha, p.idpartido, z.idzona, z.zona, p.local, p.fecha, p.hora, (SELECT equipo FROM equipos where idequipo = p.local) elocal, (SELECT equipo FROM equipos where idequipo = p.visitante) evisitante FROM partidos p, zonas z WHERE z.idzona = p.idzona and p.idzona=".$i." and p.nrofecha = 4 order by p.idzona, p.nrofecha";
-		$resultado = mysql_query($sql, $enlace);
-		$count = @mysql_num_rows($resultado);
+		$sql = new mysqli ("SELECT p.nrofecha, p.idpartido, z.idzona, z.zona, p.local, p.fecha, p.hora, (SELECT equipo FROM equipos where idequipo = p.local) elocal, (SELECT equipo FROM equipos where idequipo = p.visitante) evisitante FROM partidos p, zonas z WHERE z.idzona = p.idzona and p.idzona=".$i." and p.nrofecha = 4 order by p.idzona, p.nrofecha");
+		$resultado = mysqli_query($sql, $enlace);
+		$count = @mysqli_num_rows($resultado);
 
 		if($count > 0)
 		{
@@ -210,7 +213,7 @@ if(isset($_POST['publicar']))
 									
 			$c = 0;
 			$fecha_ant = "";			
-			while ($fila = mysql_fetch_object($resultado)) 
+			while ($fila = mysqli_fetch_object($resultado)) 
 			{
 				if($idzona != $fila->idzona)$tabla.= "<div class='espacio'>".$zona."</div>";
 				
@@ -240,7 +243,7 @@ if(isset($_POST['publicar']))
 
 }
 
-mysql_free_result($resultado);
+mysqli_free_result($resultado);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">

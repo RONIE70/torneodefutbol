@@ -1,6 +1,9 @@
 <?php
 
-include("../inc/conn.php");
+include_once("../inc/conn.php");
+include_once("../inc/config.php");
+include_once("../inc/fnc.php");
+
 
 verificar();
 
@@ -18,22 +21,24 @@ $tabla = "";
 
 $archivopost = "resultados.php";
 
+
 if($sql!="")
 {
-	$resultado = mysql_query($sql);
+	$sql = new mysqli ();
+	$resultado = mysqli_query($sql,$enlace);
 	if (!$resultado)$msg = "Error al intentar realizar la operacion";
 	else $msg = "Operacion realizada con exito";
 }
 
 if(isset($_POST['idzona']) && isset($_POST['nrofecha']))
 {
-	$sql = "SELECT p.nrofecha, p.idpartido, z.idzona, z.zona, p.local, p.visitante, p.glocal, p.gvisitante, p.fecha, p.hora, (SELECT equipo FROM equipos where idequipo = p.local) elocal, (SELECT equipo FROM equipos where idequipo = p.visitante) evisitante FROM partidos p, zonas z WHERE z.idzona = p.idzona and p.idzona=".$_POST['idzona']." and p.nrofecha=".$_POST['nrofecha']." ORDER BY p.idzona, p.nrofecha, p.idpartido";	
-	$resultado = mysql_query($sql, $enlace);
-	$count = @mysql_num_rows($resultado);
+	$sql = new mysqli( "SELECT p.nrofecha, p.idpartido, z.idzona, z.zona, p.local, p.visitante, p.glocal, p.gvisitante, p.fecha, p.hora, (SELECT equipo FROM equipos where idequipo = p.local) elocal, (SELECT equipo FROM equipos where idequipo = p.visitante) evisitante FROM partidos p, zonas z WHERE z.idzona = p.idzona and p.idzona=".$_POST['idzona']." and p.nrofecha=".$_POST['nrofecha']." ORDER BY p.idzona, p.nrofecha, p.idpartido");	
+	$resultado = mysqli_query($sql, $enlace);
+	$count = @mysqli_num_rows($resultado);
 	
 	if($count > 0)
 	{
-		while ($fila = mysql_fetch_object($resultado)) 
+		while ($fila = mysqli_fetch_object($resultado)) 
 		{
 			$zona = $fila->zona;
 			$fecha = $fila->fecha;
@@ -48,21 +53,21 @@ if(isset($_POST['idzona']) && isset($_POST['nrofecha']))
 }
 
 // Combo Equipo
-$sql = "SELECT idequipo,idzona,equipo FROM equipos order by idequipo";
+$sql = new mysqli ("SELECT idequipo,idzona,equipo FROM equipos order by idequipo");
 // Local
-$resultado = mysql_query($sql, $enlace);
+$resultado = mysqli_query($sql, $enlace);
 $comboequipolocal = "<select id='local' name='local'>";
 $comboequipolocal.="<option value =''></option>";
 if(!isset($_GET['modificar']))
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{										
     	$comboequipolocal.="<option value ='".$fila->idequipo."'>".$fila->equipo."</option>";				  
 	}
 }
 else 
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{
 		if($fila->idequipo == $idequipolocal)$selected = " selected";
 		else $selected = "";
@@ -72,19 +77,19 @@ else
 $comboequipolocal.= "</select>";
 
 // Visitante
-$resultado = mysql_query($sql, $enlace);
+$resultado = mysqli_query($sql, $enlace);
 $comboequipovisitante = "<select id='visitante' name='visitante'>";
 $comboequipovisitante.="<option value =''></option>";
 if(!isset($_GET['modificar']))
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{										
     	$comboequipovisitante.="<option value ='".$fila->idequipo."'>".$fila->equipo."</option>";				  
 	}
 }
 else 
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{
 		if($fila->idequipo == $idequipovisitante)$selected = " selected";
 		else $selected = "";
@@ -94,20 +99,20 @@ else
 $comboequipovisitante.= "</select>";
 
 // Combo Zona
-$sql = "SELECT idzona,zona FROM zonas ORDER BY idzona";
-$resultado = mysql_query($sql, $enlace);
+$sql = new mysqli ("SELECT idzona,zona FROM zonas ORDER BY idzona");
+$resultado = mysqli_query($sql, $enlace);
 $combozona = "<select id='idzona' name='idzona'>";
 $combozona.="<option value =''></option>";
 if(@$_POST['accion'] != "modificar" && !isset($_POST['idzona']) && !isset($_GET['idzona']))
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{										
     	$combozona.="<option value ='".$fila->idzona."'>".$fila->zona."</option>";				  
 	}
 }
 else
 {
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{
 		if($fila->idzona == $idzona)$selected = " selected";
 		else $selected = "";
@@ -122,9 +127,9 @@ if(isset($_POST['publicar']))
 	
 	for($i=1;$i<=4;$i++)
 	{
-		$sql = "SELECT p.nrofecha, p.idpartido, z.idzona, z.zona, p.local, glocal, gvisitante, p.fecha, p.hora, (SELECT equipo FROM equipos where idequipo = p.local) elocal, (SELECT equipo FROM equipos where idequipo = p.visitante) evisitante FROM partidos p, zonas z WHERE z.idzona = p.idzona and p.idzona=".$i." and p.nrofecha <> 4 order by p.idzona asc, p.nrofecha desc, p.idpartido asc";
-		$resultado = mysql_query($sql, $enlace);
-		$count = @mysql_num_rows($resultado);
+		$sql = new mysqli("SELECT p.nrofecha, p.idpartido, z.idzona, z.zona, p.local, glocal, gvisitante, p.fecha, p.hora, (SELECT equipo FROM equipos where idequipo = p.local) elocal, (SELECT equipo FROM equipos where idequipo = p.visitante) evisitante FROM partidos p, zonas z WHERE z.idzona = p.idzona and p.idzona=".$i." and p.nrofecha <> 4 order by p.idzona asc, p.nrofecha desc, p.idpartido asc");
+		$resultado = mysqli_query($sql, $enlace);
+		$count = @mysqli_num_rows($resultado);
 
 		if($count > 0)
 		{
@@ -137,7 +142,7 @@ if(isset($_POST['publicar']))
 									
 			$c = 0;
 			$fecha_ant = "";			
-			while ($fila = mysql_fetch_object($resultado)) 
+			while ($fila = mysqli_fetch_object($resultado)) 
 			{
 				if($idzona != $fila->idzona)$tabla.= "<div class='espacio'>".$zona."</div>";
 				
@@ -171,7 +176,7 @@ if(isset($_POST['publicar']))
 }
 
 
-mysql_free_result($resultado);
+mysqli_free_result($resultado);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">

@@ -1,25 +1,23 @@
 <?php
 
 include("../inc/conn.php");
+require_once("../inc/config.php");
+require_once("../inc/fnc.php");
 
 verificar();
 
 $tabla = $msg = "";
 $c=0;
 
+
 for($i=1;$i<=4;$i++)
 {
 	
-	$sql = "SELECT p.idequipo, e.equipo, MAX( p.nrofecha ) PJ, SUM( p.PG ) PG, SUM( p.PE ) PE, SUM( p.PP ) PP, SUM( NP ) NP, SUM( GF ) GF, SUM( GC ) GC, SUM( DF ) DF, SUM( PTS ) PTS
-	FROM puntajes p, equipos e
-	WHERE e.idequipo = p.idequipo
-	AND p.idzona = ".$i."
-	GROUP BY p.idequipo
-	ORDER BY PTS DESC , DF DESC";
+	$sql = new mysqli ('SELECT p.idequipo, e.equipo, MAX( p.nrofecha ) PJ, SUM( p.PG ) PG, SUM( p.PE ) PE, SUM( p.PP ) PP, SUM( NP ) NP, SUM( GF ) GF, SUM( GC ) GC, SUM( DF ) DF, SUM( PTS ) PTS FROM puntajes p, equipos eWHERE e.idequipo = p.idequipo AND p.idzona = ".$i." GROUP BY p.idequipo ORDER BY PTS DESC , DF DESC');
 
 	// print "<br>".$sql."<br>";
 	
-	$resultado = mysql_query($sql, $enlace);
+	$resultado = mysqli_query($sql, $enlace);
 
 	if($i==1)$zona="ZONA A";
 	elseif($i==2)$zona="ZONA B";
@@ -29,7 +27,7 @@ for($i=1;$i<=4;$i++)
 	
 	$tabla.= "<div id='listado'><table border='1'><tr><th>#</th><th>".$zona."</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>NP</th><th>GF</th><th>GC</th><th>DF</th><th>PTS</th></tr>";	
 	$c=0;
-	while ($fila = mysql_fetch_object($resultado)) 
+	while ($fila = mysqli_fetch_object($resultado)) 
 	{
 			$c++;
 	    $tabla.= "<tr><td align='center'>".$c."</td><td>".$fila->equipo."</td>
