@@ -1,4 +1,68 @@
 <?php
+include_once("../inc/conn.php");
+require_once("../inc/config.php");
+require_once("../inc/fnc.php");
+$registros="";
+$combozona="";
+$msg="";
+$equipo="";
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Torneo de F&uacute;tbol</title>
+<link href="../css/estilo.css" rel="stylesheet" type="text/css"></link>
+</head>
+<body>		
+	<?php menuHeader();?>
+	<div id="section">
+		<div id="formulario">                           
+			<form name="abm" method="POST" action="<?php print $archivopost;?>">
+				<!--<h1>Torneo de F&uacute;tbol</h1>-->
+				<h2>Carga de Equipos</h2>	
+				<BR>
+				<div id="msg"><?php print $msg;?></div>
+				<br>
+				<input type="hidden" id="accion" name="accion" value="<?php print $accion;?>">			
+				<input type="hidden" id="idequipo" name="idequipo" value="<?php print $idequipo;?>">
+				<label for="arbitro">Equipo:</label>
+				<input type="text" id="equipo" name="equipo" value="<?php print $equipo;?>">
+	    		<label for="idzona">Zona:</label>
+				<?php print $combozona?>
+	    		<BR><BR>
+	    		<h3>	    		
+		    		<input type="submit" name="grabar" value="Grabar">
+		    		<input type="submit" name="cancelar" value="Cancelar">                                     
+				</h3>
+		    </form>                                         
+		</div>
+		<div class="espacio"></div>
+		<div id="listado">
+			<table>
+				<tr>
+					<th colspan="10">
+						Equipos cargados	
+					</th>
+				</tr>
+				<tr>
+					<th>Zona</th>
+					<th>Equipo</th>
+					<th></th>
+					<th></th>
+				</tr>
+				<?php print $registros;?>					
+			</table>
+		</div>
+	</div>
+	<div id="espacio"></div>
+	<form name='frmPublicar' method="POST" action="<?php print $archivopost;?>">
+		<h3><input type="submit" name="publicar" value="Publicar Equipos"></h3>
+	</form>	
+
+</body>
+</html>
+
+<?php
 
 include_once("../inc/conn.php");
 require_once("../inc/config.php");
@@ -25,11 +89,11 @@ if(isset($_POST['grabar']))
 {
 	if(isset($_POST['accion']))
 	{
-		if($_POST['accion'] == "insertar")$sql = "insert into equipos(idequipo,idzona,equipo) values ('".$_POST['idequipo']."','".$_POST['idzona']."','".$_POST['equipo']."')";
-		elseif($_POST['accion'] == "modificar")$sql = "UPDATE equipos SET idzona = '".$_POST['idzona']."', equipo = '".$_POST['equipo']."' WHERE idequipo = ".$_POST['idequipo'];		
+		if($_POST['accion'] == "insertar")$sql = new mysqli("INSERT into equipos(idequipo,idzona,equipo) values ('".$_POST['idequipo']."','".$_POST['idzona']."','".$_POST['equipo']."')");
+		elseif($_POST['accion'] == "modificar")$sql = new mysqli ("UPDATE equipos SET idzona = '".$_POST['idzona']."', equipo = '".$_POST['equipo']."' WHERE idequipo = ".$_POST['idequipo']);		
 	}
 }
-elseif(isset($_GET['eliminar']))$sql = new mysqli ("delete from equipos where idequipo = ".$_GET['id']);
+elseif(isset($_GET['eliminar']))$sql = new mysqli ("DELETE from equipos where idequipo = ".$_GET['id']);
 
 if($sql!="")
 {
@@ -55,6 +119,8 @@ $sql = new mysqli ("SELECT e.idequipo,e.idzona,z.idzona,z.zona,e.equipo FROM equ
 $resultado = mysqli_query($sql, $enlace);
 $count = mysqli_num_rows($resultado);
 
+
+
 if($count > 0)
 {
 	while ($fila = mysqli_fetch_object($resultado)) 
@@ -71,6 +137,7 @@ $sql = new mysqli ("SELECT idzona,zona FROM zonas ORDER BY idzona");
 $resultado = mysqli_query($sql, $enlace);
 $combozona = "<select id='zona' name='idzona'>";
 $combozona.="<option value =''></option>";
+
 if(!isset($_GET['modificar']))
 {
 	while ($fila = mysqli_fetch_object($resultado)) 
@@ -142,57 +209,6 @@ if(isset($_POST['publicar']))
 
 
 mysqli_free_result($resultado);
+
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Torneo de F&uacute;tbol</title>
-<link href="../css/estilo.css" rel="stylesheet" type="text/css"></link>
-</head>
-<body>		
-	<?php menuHeader();?>
-	<div id="section">
-		<div id="formulario">                           
-			<form name="abm" method="POST" action="<?php print $archivopost;?>">
-				<!--<h1>Torneo de F&uacute;tbol</h1>-->
-				<h2>Carga de Equipos</h2>	
-				<BR>
-				<div id="msg"><?php print $msg;?></div>
-				<br>
-				<input type="hidden" id="accion" name="accion" value="<?php print $accion;?>">			
-				<input type="hidden" id="idequipo" name="idequipo" value="<?php print $idequipo;?>">
-				<label for="arbitro">Equipo:</label>
-				<input type="text" id="equipo" name="equipo" value="<?php print $equipo;?>">
-	    		<label for="idzona">Zona:</label>
-				<?php print $combozona?>
-	    		<BR><BR>
-	    		<h3>	    		
-		    		<input type="submit" name="grabar" value="Grabar">
-		    		<input type="submit" name="cancelar" value="Cancelar">                                     
-				</h3>
-		    </form>                                         
-		</div>
-		<div class="espacio"></div>
-		<div id="listado">
-			<table>
-				<tr>
-					<th colspan="10">
-						Equipos cargados	
-					</th>
-				</tr>
-				<tr>
-					<th>Zona</th>
-					<th>Equipo</th>
-					<th></th>
-					<th></th>
-				</tr>
-				<?php print $registros;?>					
-			</table>
-		</div>
-	</div>
-	<div id="espacio"></div>
-	<form name='frmPublicar' method="POST" action="<?php print $archivopost;?>">
-		<h3><input type="submit" name="publicar" value="Publicar Equipos"></h3>
-	</form>	
 <?php footer();?>
-</body>
-</html>

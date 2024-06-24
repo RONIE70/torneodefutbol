@@ -1,5 +1,5 @@
 <?php
-// print_r($_GET);
+//print_r($_GET);
 include("../inc/conn.php");
 
 verificar();

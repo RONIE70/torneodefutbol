@@ -3,6 +3,41 @@
 include("../inc/conn.php");
 require_once("../inc/config.php");
 require_once("../inc/fnc.php");
+$msg="";
+$tabla="";
+$c=0;
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Torneo de F&uacute;tbol</title>
+<link href="../css/estilo.css" rel="stylesheet" type="text/css"></link>
+<script type="text/javascript" src="js/lib.js"></script>
+</head>
+<body>		
+<?php menuHeader();?>
+	<div id="section">
+		<div id="msg"><?php print $msg;?></div>
+		<div id="listado">                           
+			<h2>Tabla de Posiciones</h2>	
+			<BR>
+				<?php print $tabla;?>
+		</div>
+	</div>
+	<div id="espacio"></div>
+	<form name='frmPublicar' method="POST" action="posiciones.php">
+		<h3><input type="submit" name="publicar" value="Publicar Posiciones"></h3>
+	</form>
+		
+<?php footer();?>
+</body>
+</html>
+
+<?php
+
+include("../inc/conn.php");
+require_once("../inc/config.php");
+require_once("../inc/fnc.php");
 
 verificar();
 
@@ -53,27 +88,3 @@ if(isset($_POST['publicar']))
 
 
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Torneo de F&uacute;tbol</title>
-<link href="../css/estilo.css" rel="stylesheet" type="text/css"></link>
-<script type="text/javascript" src="js/lib.js"></script>
-</head>
-<body>		
-<?php menuHeader();?>
-	<div id="section">
-		<div id="msg"><?php print $msg;?></div>
-		<div id="listado">                           
-			<h2>Tabla de Posiciones</h2>	
-			<BR>
-				<?php print $tabla;?>
-		</div>
-	</div>
-	<div id="espacio"></div>
-	<form name='frmPublicar' method="POST" action="posiciones.php">
-		<h3><input type="submit" name="publicar" value="Publicar Posiciones"></h3>
-	</form>
-		
-<?php footer();?>
-</body>
-</html>
